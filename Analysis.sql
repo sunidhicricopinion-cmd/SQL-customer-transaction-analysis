@@ -15,7 +15,7 @@ FROM customer_transcations;
 
 Q4.--------AVG TRANSCATION VALUE?
 SELECT AVG(Amount)
-FROM customer_transcations;
+FROM customer_transcations; 
 
 Q5.--------MONTHLY  REVENUE?
 SELECT SUM(Amount) AS REVENUE, MONTH(TRANSACTION_DATE)
@@ -44,17 +44,79 @@ LIMIT 1;
 
 Q9.-----Which customers made the highest single transaction?
 
-    SELECT
-    customer_id,
-    transaction_id,
-    amount
+SELECT
+customer_id,
+transaction_id,
+amount
 FROM customer_transactions
 WHERE amount = (
-    SELECT MAX(amount)
-    FROM customer_transactions
+SELECT MAX(amount)
+FROM customer_transactions
 );
 	
+Q10.-------- which customers have made multiple customer transcations?
 
+SELECT
+customer_id,
+COUNT(transaction_id) AS total_transactions
+FROM customer_transactions
+GROUP BY customer_id
+HAVING COUNT(transaction_id) > 1;
+
+Q12.----------- what is the average trancation amount by region?
+
+SELECT
+    region,
+    AVG(amount) AS average_transaction_amount
+FROM customer_transactions
+GROUP BY region;
+
+Q13.---------- Rank customer based on total spending?
+
+	SELECT
+    customer_id,
+    SUM(amount) AS total_spending,
+    RANK() OVER (ORDER BY SUM(amount) DESC) AS customer_rank
+FROM customer_transactions
+GROUP BY customer_id;
+
+
+Q14.------------Identify high value transaction ( above avrage transaction amount)?
+
+SELECT
+transaction_id,
+customer_id,
+transaction_date,
+amount,
+region
+FROM customer_transactions
+WHERE amount > (
+SELECT AVG(amount)
+FROM customer_transactions
+);
+
+Q15.----------Calculate each region's contribution to total revenue?
+
+SELECT
+region,
+SUM(amount) AS regional_revenue,
+ROUND(
+(SUM(amount) / (SELECT SUM(amount) FROM customer_transactions)) * 100,2
+    ) AS contribution_percentage
+FROM customer_transactions
+GROUP BY region
+ORDER BY contribution_percentage DESC;
+
+
+	
+	
+	
+
+
+
+
+
+	
 
 	
 	
